@@ -1,0 +1,453 @@
+#dungeon crawling/roleplaying game with hp and mana/stamina
+
+hp = 50
+stamina = 50
+mana = 60
+gold = 100        #monsters will drop 8-12 gold when they die
+hpPotions = 0
+manaPotions = 0
+weapon = []
+
+import time
+import random
+
+def game():
+  global weapon
+  weapon = menu()
+  choice = "filler"
+  print("You enter the dungeon with your newly obtained %s." % weapon[0])
+  print("Your starting HP is %s/50, starting stamina is %s/50, and starting mana is %s/60" % (hp, stamina, mana))
+  print()
+  print("You start your journey into the dungeon's depths...")
+  while choice.lower() != "quit" and choice.lower() != "exit":
+    choice = takeTurn()
+  time.sleep(2)
+  print("Thank you for playing!")
+
+def menu():
+  global weapon
+  print("Welcome to Neko's Dungeon! Before you enter, choose your weapon.")
+  print()
+  time.sleep(2.5)
+  print("Sword - 10-15 damage, -5 stamina/attack (You regain +2 stamina during turns where nothing happens)")
+  print("With the sword, you get decent damage per turn.")
+  time.sleep(.1)
+  print()
+  print("Bow - 8-12 damage, -4 stamina/attack")
+  print("With the bow, you do less damage, but you use less stamina and have a higher chance of dodging an attack.")
+  time.sleep(.1)
+  print()
+  print("Staff - 13-16 damage, -7 mana/attack")
+  print("With the staff, you do high damage, but are more prone to taking damage.")
+  weapon.append(input())
+  while weapon[0] != "sword" and weapon[0] != "bow" and weapon[0] != "staff":
+    print("Please choose a weapon!")
+    weapon = input()
+  print("You have chosen the %s!" % weapon[0])
+  print()
+  if weapon[0] == "sword":
+    weapon = ["sword",10,15,5]                    #weapon variable now contains name of weapon, min/max damage, and stamina/mana cost
+  elif weapon[0] == "bow":
+    weapon = ["bow",8,12,4]
+  elif weapon[0] == "staff":
+    weapon = ["staff",13,16,7]
+  return weapon
+
+def takeTurn():
+  global hp
+  global hpPotions
+  global mana
+  global manaPotions
+  global stamina
+  time.sleep(2)
+  events = ["monster","monster","monster","You venture further into the dungeon...","You venture further into the dungeon...","You venture further into the dungeon...","You venture further into the dungeon...","health potion","shop","mana potion"]
+  randomEvent = random.randint(0,9)
+  if randomEvent in range(0, 3):
+    attack()
+    return attack()
+  elif randomEvent in range(3,7):
+    print(events[randomEvent])
+    if stamina <= 47:
+      stamina += 3
+      print("Your stamina is %s/50" % stamina)
+      print()
+    elif stamina > 47 and stamina != 50:
+      stamina = 50
+      print("Your stamina is %s/50" % stamina)
+      print()
+  elif randomEvent == 7:
+    if hp == 50:
+      print("You found a health potion! You already have full health, so you save the potion for later.")
+      hpPotions += 1
+    else:
+      print("You found a health potion! You restore 10HP.")
+      if hp > 40:
+        hp = 50
+      else:
+        hp += 10
+      print("HP: %s/50" % hp)
+  elif randomEvent == 8:
+    print("You found a small shop in the dungeon! Do you want to enter? (Yes/No)")
+    choice = input()
+    if choice.lower() == "yes":
+      shop()
+  elif randomEvent == 9:
+    if mana == 60:
+      print("You found a mana potion! You already have full mana, so you save it for later.")
+      manaPotions += 1
+    else:
+      print("You found a mana potion! You regain 15 mana.")
+      if mana > 45:
+        mana = 60
+      else:
+        mana += 15
+      print("Mana: %s/60" % mana)
+  return "nothing"
+      
+def shop():
+  global gold
+  global hpPotions
+  global manaPotions
+  global stamina
+  global weapon
+  greatsword = "Adventurer's Greatsword - 13-17 damage, -7 stamina/attack | 400 Gold"
+  greatsword2 = "Left here by a long-dead adventurer, it seems heavy to lift yet perfect for decapitating your enemies."
+  bow = "Elfin Bow - 11-14 damage, -5 stamina/attack | 400 Gold"
+  bow2 = "A bow with beautiful curves, it just seems too elegant for a human to own."
+  staff = "Sorcerer's Staff - 16-19 damage, -8 mana/attack | 450 Gold"
+  staff2 = "It seems to have some sort of powerful aura around it. Perhaps it belonged to one of the great wizards?"
+  print("Whatcha lookin' to buy ehh?")
+  print()
+  print(greatsword)
+  print(greatsword2)
+  print()
+  print(bow)
+  print(bow2)
+  print()
+  print(staff)
+  print(staff2)
+  print()
+  print("Health Potion - Heals 10HP | 25 Gold")
+  print()
+  print("Mana Potion - Restores 15 Mana | 25 Gold")
+  print()
+  print("Meal - Restores 10 Stamina | 25 Gold")
+  print()
+  print("You have " + str(gold) + " gold")
+  print()
+  choice = input()
+  while gold >= 400 and choice.lower() != "no":
+    if choice.lower() == "adventurer's greatsword" or choice.lower() == "greatsword":
+      weapon = ["greatsword",13,17,7]
+      gold -= 400
+      print("The greatsword ehh? Another great adventurer takes the torch.")
+      print()
+      time.sleep(1)
+      print("You are now using the Adventurer's Greatsword!")
+      print()
+    elif choice.lower() == "elfin bow" or choice.lower() == "bow":
+      weapon = ["elfin bow",11,14,5]
+      gold -= 400
+      print("The bow ehh? Take good care of 'er or else the elves will be after ya.")
+      print()
+      time.sleep(1)
+      print("You are now using the Elfin Bow!")
+      print()
+    elif choice.lower() == "sorcerer's staff" or choice.lower() == "staff":
+      weapon = ["sorcerer's staff",16,19,8]
+      gold -= 400
+      print("The staff ehh? Ya better not use that thing around here.")
+      print()
+      time.sleep(1)
+      print("You are now using the Sorcerer's Staff!")
+      print()
+    elif choice.lower() == "health potion":
+      print("How many ya want?")
+      choice = int(input())
+      hpPotions += choice
+      gold -= 25 * choice
+      if choice > 1:
+        print("Take yer health potions and scram already.")
+      elif choice == 0:
+        print("Ya don't want any now? Geez, tell me earlier.")
+      else:
+        print("Take yer health potion and scram already.")
+      print()
+      time.sleep(1)
+      print("HP Potions: %s" % hpPotions)
+      print()
+    elif choice.lower() == "mana potion":
+      print("How many ya want?")
+      choice = int(input())
+      manaPotions += choice
+      gold -= 25 * choice
+      if choice > 1:
+        print("Take yer mana potions and scram already.")
+      elif choice == 0:
+        print("Ya don't want any now? Geez, tell me earlier.")
+      else:
+        print("Take yer mana potion and scram already.")
+      print()
+      time.sleep(1)
+      print("Mana Potions: %s" % manaPotions)
+      print()
+    elif choice.lower() == "meal":
+      print("How many ya want?")
+      choice = int(input())
+      stamina += choice * 10
+      gold -= 25 * choice
+      if choice > 1:
+        print("Take yer meals and scram already.")
+      elif choice == 0:
+        print("Ya don't want any now? Geez, tell me earlier.")
+      else:
+        print("Take yer meal and scram already.")
+      print()
+      time.sleep(1)
+      print("Stamina: %s" % stamina)
+      print()
+      time.sleep(1)
+      print("Ya want anythin' else?")
+    else:
+      print("Ya say something? Didn't quite catch ya there.")
+      print()
+      choice = str(input())
+  while gold < 400 and gold > 0 and choice.lower() != "no":
+    if choice.lower() != "health potion" and choice.lower() != "mana potion":
+      print("Ya can't expect me to give ya this for free ya know? Choose something ya can afford.")
+    elif str(choice.lower()) == "health potion":
+      print("How many ya want?")
+      choice = int(input())
+      hpPotions += choice
+      gold -= 25 * choice
+      if choice > 1:
+        print("Take yer health potions and scram already.")
+      elif choice == 0:
+        print("Ya don't want any now? Geez, tell me earlier.")
+      else:
+        print("Take yer health potion and scram already.")
+      print()
+      time.sleep(1)
+      print("HP Potions: %s" % hpPotions)
+      print()
+      time.sleep(1)
+      print("Ya want anythin' else?")
+    elif choice.lower() == "mana potion":
+      print("How many ya want?")
+      choice = int(input())
+      manaPotions += choice
+      gold -= 25 * choice
+      if choice > 1:
+        print("Take yer mana potions and scram already.")
+      elif choice == 0:
+        print("Ya don't want any now? Geez, tell me earlier.")
+      else:
+        print("Take yer mana potion and scram already.")
+      print()
+      time.sleep(1)
+      print("Mana Potions: %s" % manaPotions)
+      print()
+      time.sleep(1)
+      print("Ya want anythin' else?")
+    elif choice.lower() == "meal":
+      print("How many ya want?")
+      choice = int(input())
+      stamina += choice * 10
+      gold -= 25 * choice
+      if choice > 1:
+        print("Take yer meals and scram already.")
+      elif choice == 0:
+        print("Ya don't want any now? Geez, tell me earlier.")
+      else:
+        print("Take yer meal and scram already.")
+      print()
+      time.sleep(1)
+      print("Stamina: %s" % stamina)
+      print()
+      time.sleep(1)
+      print("Ya want anythin' else?")
+    choice = str(input())
+  print("G'luck out there.")
+  return choice
+
+#randomNumber()
+#attack()
+#takeTurn()
+  #can have takeTurn randomly choose either move on or a monster appears and after certain number of turns game ends
+def attack():
+  global hp
+  global hpPotions
+  global mana
+  global manaPotions
+  global stamina
+  global gold
+  global weapon
+  demon = ["demon",50,5,7]                  #monster variables have the monster name, hp, minimum, and maximum damage respectively
+  slime = ["slime",15,1,3]
+  goblin = ["goblin",35,4,6]
+  ghost = ["ghost",70,1,2]
+  monsterType = [demon,slime,goblin,ghost]
+  monsterNumber = random.randint(0, 3)
+  attackingMonster = monsterType[monsterNumber]
+  print("You encountered a " + attackingMonster[0] + "!")
+  time.sleep(1)
+  print("What do you want to do?")
+  print()
+  time.sleep(1)
+  print("Attack | Retreat | Drink Health Potion | Drink Mana Potion")
+  print()
+  choice = input()
+  while choice.lower() != "retreat":
+    if choice.lower() != "attack" and choice.lower() != "drink health potion" and choice.lower() != "drink mana potion":
+      print("Please enter a valid option!")
+      choice = input()
+    elif choice.lower() == "attack":
+      hitChance = random.randint(1, 10)
+      if hitChance <= 7:
+        hitDamage = random.randint(weapon[1], weapon[2])
+        if weapon[0] == "sword":
+          stamina -= 5
+        elif weapon[0] == "bow":
+          stamina -= 4
+        elif weapon[0] == "staff":
+          mana -= 7
+        elif weapon[0] == "greatsword":
+          stamina -= 7
+        elif weapon[0] == "elfin bow":
+          stamina -= 5
+        elif weapon[0] == "sorcerer's staff":
+          mana -= 8
+        attackingMonster[1] -= hitDamage
+        print("Successful attack! You dealt %s damage to the %s!" % (hitDamage, attackingMonster[0]))
+        time.sleep(1)
+        print("Stamina: %s/50" % stamina)
+        print("Mana: %s/60" % mana)
+        time.sleep(1)
+        print("%s's remaining HP: %s" % (attackingMonster[0], attackingMonster[1]))
+        print()
+        if attackingMonster[1] <= 0:
+          droppedGold = random.randint(8, 12)
+          gold += droppedGold
+          print("You killed the %s! It dropped %s gold" % (attackingMonster[0], droppedGold))
+          choice = "retreat"
+          return "nothing"
+      elif hitChance > 7:
+        print("The %s dodged!" % attackingMonster[0])
+        print()
+        time.sleep(1)
+      if weapon[0] == "sword" or weapon[0] == "greatsword":
+        dodgeChance = random.randint(1, 10)
+        if dodgeChance <= 2:                                                        #sword users have 20% chance of dodging attack (2/10)
+          print("The %s tries to attack you!" % attackingMonster[0])
+          time.sleep(1)
+          print("You manage to dodge!")
+          print()
+          time.sleep(1)
+        else:
+          monsterDamage = random.randint(attackingMonster[2], attackingMonster[3])
+          hp -= monsterDamage
+          print("The %s lands a hit, doing %s damage!" % (attackingMonster[0], monsterDamage))
+          time.sleep(1)
+          print("Your HP: %s/50" % hp)
+          print()
+          time.sleep(1)
+      elif weapon[0] == "bow" or weapon[0] == "elfin bow":
+        dodgeChance = random.randint(1, 10)
+        if dodgeChance <= 3:                                                        #bow users have 30% chance of dodging attack (3/10)
+          print("The %s tries to attack you!" % attackingMonster[0])
+          time.sleep(1)
+          print("You manage to dodge!")
+          print()
+          time.sleep(1)
+        else:
+          monsterDamage = random.randint(attackingMonster[2], attackingMonster[3])
+          hp -= monsterDamage
+          print("The %s lands a hit, doing %s damage!" % (attackingMonster[0], monsterDamage))
+          time.sleep(1)
+          print("Your HP: %s/50" % hp)
+          print()
+          time.sleep(1)
+      elif weapon[0] == "staff" or weapon[0] == "sorcerer's staff":
+        dodgeChance = random.randint(1, 10)
+        if dodgeChance == 1:                                                        #staff users have 10% chance of dodging attack (1/10)
+          print("The %s tries to attack you!" % attackingMonster[0])
+          time.sleep(1)
+          print("You manage to dodge!")
+          print()
+          time.sleep(1)
+        else:
+          monsterDamage = random.randint(attackingMonster[2], attackingMonster[3])
+          hp -= monsterDamage
+          print("The %s lands a hit, doing %s damage!" % (attackingMonster[0], monsterDamage))
+          time.sleep(1)
+          print("Your HP: %s/50" % hp)
+          print()
+          time.sleep(1)
+      if hp <= 0:
+          print("The %s lands a hit! You fall down, you vision darkening as you feel the warmth of your own blood pooling beneath you..." % attackingMonster[0])
+          print()
+          time.sleep(2)
+          print("You died.")
+          print()
+          return "quit"
+      print("What do you want to do now?")
+      print()
+      time.sleep(1)
+      print("Attack | Retreat | Drink Health Potion | Drink Mana Potion")
+      choice = input()
+    elif choice.lower() == "drink health potion":
+      if hpPotions > 0:
+        hpPotions -= 1
+        if hp > 40:
+          hp = 50
+        else:
+          hp += 10
+        print("You drank a health potion and restored 10HP.")
+        time.sleep(1)
+        print("Your HP: %s/50" % hp)
+        time.sleep(1)
+        print("Remaining health potions: %s" % hpPotions)
+        print()
+        time.sleep(1)
+      else:
+        print("You don't have any health potions!")
+        print()
+        time.sleep(1)
+      print("What do you want to do now?")
+      print()
+      time.sleep(1)
+      print("Attack | Retreat | Drink Health Potion | Drink Mana Potion")
+      choice = input()
+    elif choice.lower() == "drink mana potion":
+      if manaPotions > 0:
+        manaPotions -= 1
+        if mana > 45:
+          mana = 60
+        else:
+          mana += 15
+        print("You drank a mana potion and regain 15 mana.")
+        time.sleep(1)
+        print("Mana: %s/60" % mana)
+        time.sleep(1)
+        print("Remaining mana potions: %s" % manaPotions)
+        print()
+        time.sleep(1)
+        print("What do you want to do now?")
+        print()
+        time.sleep(1)
+        print("Attack | Retreat | Drink Health Potion | Drink Mana Potion")
+        choice = input()
+      else:
+        print("You don't have any mana potions!")
+        print()
+        time.sleep(1)
+      print("What do you want to do now?")
+      print()
+      time.sleep(1)
+      print("Attack | Retreat | Drink Health Potion | Drink Mana Potion")
+      choice = input()
+  print("You quickly hurry away, hoping not to meet anymore monsters anytime soon.")
+  print()
+  return "nothing"
+
+game()
